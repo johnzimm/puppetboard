@@ -153,6 +153,65 @@ def index():
         stats=stats
         )
 
+@app.route('/radiator')
+def radiator():
+    """This view generates the index page and displays a set of metrics and
+    latest reports on nodes fetched from PuppetDB.
+    """
+    # TODO: Would be great if we could parallelize this somehow, doing these
+    # requests in sequence is rather pointless.
+    prefix = 'com.puppetlabs.puppetdb.query.population'
+    num_nodes = get_or_abort(
+        puppetdb.metric,
+        "{0}{1}".format(prefix, ':type=default,name=num-nodes'))
+    num_resources = get_or_abort(
+        puppetdb.metric,
+        "{0}{1}".format(prefix, ':type=default,name=num-resources'))
+    avg_resources_node = get_or_abort(
+        puppetdb.metric,
+        "{0}{1}".format(prefix, ':type=default,name=avg-resources-per-node'))
+    metrics = {
+        'num_nodes': num_nodes['Value'],
+        'num_resources': num_resources['Value'],
+        'avg_resources_node': "{0:10.0f}".format(avg_resources_node['Value']),
+        }
+
+    nodes = puppetdb.nodes(
+        unreported=app.config['UNRESPONSIVE_HOURS'],
+        with_status=True)
+
+    nodes_overview = []
+    stats = {
+        'changed': 0,
+        'unchanged': 0,
+        'failed': 0,
+        'unreported': 0,
+	'noop': 0
+        }
+
+    for node in nodes:
+        if node.status == 'unreported':
+            stats['unreported'] += 1
+        elif node.status == 'changed':
+            stats['changed'] += 1
+        elif node.status == 'failed':
+            stats['failed'] += 1
+        elif node.status == 'noop':
+            stats['noop'] += 1
+        else:
+            stats['unchanged'] += 1
+
+        if node.status != 'unchanged':
+            nodes_overview.append(node)
+
+    return render_template(
+        'radiator.html',
+        metrics=metrics,
+        nodes=nodes_overview,
+        stats=stats
+        )
+
+
 
 @app.route('/nodes')
 def nodes():

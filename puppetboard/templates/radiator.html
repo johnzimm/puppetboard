@@ -1,0 +1,43 @@
+{% extends 'layout-minimal.html' %}
+{% block content %}
+<div class="ui vertical grid">
+  <div class="three column row">
+    <div class="column">
+        <h1 class="ui red header no-margin-bottom">
+          {{stats['failed']}}
+          <small>{% if stats['failed']== 1 %} node {% else %} nodes {% endif %}</small>
+        </h1>
+      <span>with status failed</span>
+    </div>
+    <div class="column">
+        <h1 class="ui header green no-margin-bottom">
+          {{stats['changed']}}
+          <small>{% if stats['changed']== 1 %} node {% else %} nodes {% endif %}</small>
+        </h1>
+      <span>with status changed</span>
+    </div>
+    <div class="column">
+        <h1 class="ui header black no-margin-bottom">
+          {{ stats['unreported'] }}
+          <small>{% if stats['unreported']== 1 %} node {% else %} nodes {% endif %}</small>
+        </h1>
+      <span>unreported in the last {{ config.UNRESPONSIVE_HOURS }} hours</span>
+    </div>
+  </div>
+  <div class="three column row">
+    <div class="column">
+      <h1 class="ui header darkblue no-margin-bottom">{{metrics['num_nodes']}}</h1>
+      <span>Population</span>
+    </div>
+    <div class="column">
+      <h1 class="ui header darkblue no-margin-bottom">{{metrics['num_resources']}}</h1>
+      <span>Resources managed</span>
+    </div>
+    <div class="column">
+      <h1 class="ui header darkblue no-margin-bottom">{{metrics['avg_resources_node']}}</h1>
+      <span>Avg. resources/node</span>
+    </div>
+  </div>
+  </div>
+</div>
+{% endblock content %}
