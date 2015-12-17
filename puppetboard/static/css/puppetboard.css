@@ -189,3 +189,14 @@ h1.ui.header.no-margin-bottom {
 #dailyReportsChartContainer {
   height: 160px;
 }
+/* ZIMM */
+.ui.menu .item {
+  padding: 0.4em 0.75em;
+}
+.ui.label {
+  margin: 0px 0px;
+  padding: 0.2em 0.5em;
+}
+footer {
+  visibility: hidden;
+}
